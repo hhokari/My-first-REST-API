@@ -63,6 +63,7 @@ def get_users():
       userToDelete = request.get_json()
       users['users_list'].remove(userToDelete)
       resp = jsonify(success=True)
+      resp.status_code = 200
       return resp
 
 @app.route('/users/<id>')
