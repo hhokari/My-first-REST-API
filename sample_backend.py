@@ -35,7 +35,7 @@ def hello_world():
 #   return random_id
 
 
-@app.route('/users', methods=['GET', 'POST','DELETE'])
+@app.route('/users', methods=['GET', 'POST'])
 def get_users():
    if request.method == 'GET':
       search_username = request.args.get('name')
@@ -60,21 +60,32 @@ def get_users():
       newUser.save()
       resp = jsonify(newUser), 201
       return resp
-   elif request.method == 'DELETE':
-      userToDelete = request.get_json()
-      users['users_list'].remove(userToDelete)
-      resp = jsonify(success=True)
-      resp.status_code = 200
+   #elif request.method == 'DELETE':
+   #   userToDelete = request.get_json()
+   #   users['users_list'].remove(userToDelete)
+   #   resp = jsonify(success=True)
+   #   resp.status_code = 200
       # 200 is the default code for a normal response
-      return resp
+   #   return resp
       
-@app.route('/users/<id>', methods=['GET'])
+@app.route('/users/<id>', methods=['GET', 'DELETE'])
 
 def get_user(id):
    if request.method == 'GET':
       user = User({"_id":id})
       if user.reload() :
          return user
+      else :
+         return jsonify({"error": "User not found"}), 404
+
+   elif request.method == 'DELETE':
+      user = User({"_id":id})
+      resp = user.remove()
+      print(f'resp = {resp}')
+      if resp['n'] == 1:
+         return {}, 204
+      #if user.reload() :
+      #   return user
       else :
          return jsonify({"error": "User not found"}), 404
       
